@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "56234174900",
+    "project_id": "aitechpredict",
+    "storage_bucket": "aitechpredict.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:56234174900:android:0ff73e4ee1d96197ddeae1",
+        "android_client_info": {
+          "package_name": "com.aitchpredict.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAJee7Hj9ZGMDA2uJimQiKYF-g12s1oZro"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

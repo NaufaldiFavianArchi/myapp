@@ -3,8 +3,10 @@ import 'weather_dashboard.dart';
 import 'predict_api.dart';
 
 class KomoditasPage extends StatefulWidget {
+  const KomoditasPage({super.key});
+
   @override
-  _KomoditasPageState createState() => _KomoditasPageState();
+    State<KomoditasPage> createState() => _KomoditasPageState();
 }
 
 class _KomoditasPageState extends State<KomoditasPage> {
@@ -23,17 +25,17 @@ class _KomoditasPageState extends State<KomoditasPage> {
 
   @override
   Widget build(BuildContext context) {
-    var screenWidth = MediaQuery.of(context).size.width;
+    // var screenWidth = MediaQuery.of(context).size.width;
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: Colors.black),
+          icon: const Icon(Icons.arrow_back, color: Colors.black),
           onPressed: () => Navigator.pop(context),
         ),
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
+            const Text(
               "Perbandingan Harga",
               style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Colors.blueAccent),
             ),
@@ -48,7 +50,7 @@ class _KomoditasPageState extends State<KomoditasPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            SizedBox(height: 10),
+            const SizedBox(height: 10),
             // Filter Komoditas
             _buildDropdownFilter(
               label: 'Pilih Komoditas',
@@ -60,7 +62,7 @@ class _KomoditasPageState extends State<KomoditasPage> {
                 });
               },
             ),
-            SizedBox(height: 10),
+            const SizedBox(height: 10),
             // Filter Provinsi/Kota 1
             _buildDropdownFilter(
               label: 'Pilih Provinsi/Kota 1',
@@ -72,7 +74,7 @@ class _KomoditasPageState extends State<KomoditasPage> {
                 });
               },
             ),
-            SizedBox(height: 10),
+            const SizedBox(height: 10),
             // Filter Provinsi/Kota 2
             _buildDropdownFilter(
               label: 'Pilih Provinsi/Kota 2',
@@ -84,7 +86,7 @@ class _KomoditasPageState extends State<KomoditasPage> {
                 });
               },
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             // Tabel Perbandingan Harga Komoditas
             Expanded(
               child: Container(
@@ -92,27 +94,27 @@ class _KomoditasPageState extends State<KomoditasPage> {
                   color: Colors.blue[50],
                   borderRadius: BorderRadius.circular(15),
                 ),
-                padding: EdgeInsets.symmetric(vertical: 20, horizontal: 15),
+                padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 15),
                 child: ListView(
                   children: [
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text(
+                        const Text(
                           "Tanggal",
                           style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
                         ),
                         Text(
                           selectedProvinsi1,
-                          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.blueAccent),
+                          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.blueAccent),
                         ),
                         Text(
                           selectedProvinsi2,
-                          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.blueAccent),
+                          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.blueAccent),
                         ),
                       ],
                     ),
-                    SizedBox(height: 10),
+                    const SizedBox(height: 10),
                     ...hargaKomoditas.map((data) {
                       return Card(
                         shape: RoundedRectangleBorder(
@@ -127,7 +129,7 @@ class _KomoditasPageState extends State<KomoditasPage> {
                             children: [
                               Text(
                                 data['tanggal']!,
-                                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                                style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
                               ),
                               Text(
                                 'Rp. ${data[selectedProvinsi1]}',
@@ -141,7 +143,7 @@ class _KomoditasPageState extends State<KomoditasPage> {
                           ),
                         ),
                       );
-                    }).toList(),
+                    }),
                   ],
                 ),
               ),
@@ -177,13 +179,13 @@ class _KomoditasPageState extends State<KomoditasPage> {
             case 0:
               Navigator.pushReplacement(
                 context,
-                MaterialPageRoute(builder: (context) => WeatherDashboard()),
+                MaterialPageRoute(builder: (context) => const WeatherDashboard()),
               );
               break;
             case 1:
               Navigator.pushReplacement(
                 context,
-                MaterialPageRoute(builder: (context) => CropPredictionPage()),
+                MaterialPageRoute(builder: (context) => const CropPredictionPage()),
               );
               break;
             case 2:
@@ -207,13 +209,13 @@ class _KomoditasPageState extends State<KomoditasPage> {
           label,
           style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500, color: Colors.grey[700]),
         ),
-        SizedBox(height: 5),
+        const SizedBox(height: 5),
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 15.0, vertical: 5.0),
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.circular(20),
-            boxShadow: [
+            boxShadow: const[
               BoxShadow(
                 color: Colors.black12,
                 blurRadius: 8,
@@ -227,12 +229,12 @@ class _KomoditasPageState extends State<KomoditasPage> {
             items: items.map((String value) {
               return DropdownMenuItem<String>(
                 value: value,
-                child: Text(value, style: TextStyle(fontSize: 16)),
+                child: Text(value, style: const TextStyle(fontSize: 16)),
               );
             }).toList(),
             onChanged: onChanged,
-            underline: SizedBox(),
-            icon: Icon(Icons.arrow_drop_down, color: Colors.black),
+            underline: const SizedBox(),
+            icon: const Icon(Icons.arrow_drop_down, color: Colors.black),
           ),
         ),
       ],

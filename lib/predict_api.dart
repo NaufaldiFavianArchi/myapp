@@ -316,7 +316,7 @@ class _CropPredictionPageState extends State<CropPredictionPage> {
               // Navigasi ke halaman Cuaca
               Navigator.pushReplacement(
                 context,
-                MaterialPageRoute(builder: (context) => WeatherDashboard()),
+                MaterialPageRoute(builder: (context) => const WeatherDashboard()),
               );
               break;
             case 1:
@@ -326,7 +326,7 @@ class _CropPredictionPageState extends State<CropPredictionPage> {
               // Navigasi ke halaman Komoditas
               Navigator.pushReplacement(
                 context,
-                MaterialPageRoute(builder: (context) => KomoditasPage()),
+                MaterialPageRoute(builder: (context) => const KomoditasPage()),
               );
               break;
           }

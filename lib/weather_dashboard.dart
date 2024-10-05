@@ -5,8 +5,10 @@ import 'predict_api.dart';
 import 'komoditas_page.dart';
 
 class WeatherDashboard extends StatefulWidget {
+  const WeatherDashboard({super.key});
+
   @override
-  _WeatherDashboardState createState() => _WeatherDashboardState();
+  State<WeatherDashboard> createState() => _WeatherDashboardState();
 }
 
 class _WeatherDashboardState extends State<WeatherDashboard> {
@@ -130,7 +132,7 @@ class _WeatherDashboardState extends State<WeatherDashboard> {
             case 2:
               Navigator.pushReplacement(
                 context,
-                MaterialPageRoute(builder: (context) => KomoditasPage()),
+                MaterialPageRoute(builder: (context) => const KomoditasPage()),
               );
               break;
           }
@@ -185,7 +187,7 @@ class _WeatherDashboardState extends State<WeatherDashboard> {
   }
 
   Widget _buildHourlyUpdateSection() {
-    return Container(
+    return SizedBox(
       height: 120,
       child: ListView.builder(
         scrollDirection: Axis.horizontal,

@@ -12,7 +12,7 @@ class WeatherDashboard extends StatefulWidget {
 }
 
 class _WeatherDashboardState extends State<WeatherDashboard> {
-  final String apiKey = 'YOUR_API_KEY'; // Ganti dengan API key OpenWeather Anda
+  final String apiKey = '2b488ec308e6a4b9c9b9d7d2d8ccc4f9'; // Ganti dengan API key OpenWeather Anda
   final String city = 'Bandar Lampung';
   double temperature = 0.0;
   double humidity = 0.0;
@@ -42,11 +42,14 @@ class _WeatherDashboardState extends State<WeatherDashboard> {
       if (currentWeatherResponse.statusCode == 200) {
         final currentWeatherData = jsonDecode(currentWeatherResponse.body);
         setState(() {
-          temperature = currentWeatherData['main']['temp'];
-          humidity = currentWeatherData['main']['humidity'];
-          rainfall = currentWeatherData['clouds']['all'].toDouble();
-          windSpeed = currentWeatherData['wind']['speed'];
-          weatherStatus = currentWeatherData['weather'][0]['description'];
+          temperature = currentWeatherData['main']['temp']?. toDouble() ?? 0.0;
+          humidity = currentWeatherData['main']['humidity']?. toDouble() ?? 0.0;
+          rainfall = currentWeatherData['rain']?['1h']?. toDouble() ??
+                     currentWeatherData['rain']?['3h']?. toDouble() ??
+                     0.0;
+          windSpeed = currentWeatherData['wind']['speed']?. toDouble() ?? 0.0;
+// Suggested code may be subject to a license. Learn more: ~LicenseLog:2377620614.
+          weatherStatus = currentWeatherData['weather'][0]['description'] ?? 'Unknown';
         });
       }
 
@@ -60,7 +63,7 @@ class _WeatherDashboardState extends State<WeatherDashboard> {
       }
     } catch (e) {
       setState(() {
-        weatherStatus = 'Error fetching data';
+        weatherStatus = 'Error fetching data: $e';
       });
     }
   }
@@ -176,9 +179,9 @@ class _WeatherDashboardState extends State<WeatherDashboard> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
-              _buildWeatherDetailItem("Rainfall", "$rainfall%"),
-              _buildWeatherDetailItem("Humidity", "$humidity%"),
-              _buildWeatherDetailItem("Wind", "$windSpeed km/h"),
+              _buildWeatherDetailItem("Rainfall", rainfall > 0 ? "${rainfall.toStringAsFixed(1)} mm" : "N/A"),
+              _buildWeatherDetailItem("Humidity", "${humidity.toStringAsFixed(0)}%"),
+              _buildWeatherDetailItem("Wind", "${windSpeed.toStringAsFixed(1)} m/s"),
             ],
           ),
         ],
@@ -194,9 +197,10 @@ class _WeatherDashboardState extends State<WeatherDashboard> {
         itemCount: hourlyForecast.length,
         itemBuilder: (context, index) {
           final forecast = hourlyForecast[index];
-          final time = forecast['dt_txt'].substring(11, 16); // Ambil waktu dari dt_txt
-          final temp = forecast['main']['temp'].toString();
-          final humidity = forecast['main']['humidity'].toString();
+          final time = forecast['dt_txt']?.substring(11, 16) ?? 'N/A'; // Ambil waktu dari dt_txt
+          final temp = forecast['main']?['temp']?.toString() ?? 'N/A';
+          final humidity = forecast['main']?['humidity']?.toString() ?? 'N/A';
+
           return _buildHourlyItem(time, "$temp°C", "$humidity%");
         },
       ),

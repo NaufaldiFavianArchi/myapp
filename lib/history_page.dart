@@ -1,74 +1,51 @@
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 
-class HistoryPage extends StatefulWidget {
-  final List<String> predictionHistory;
+class HistoryPage extends StatelessWidget {
+  final List<Map<String, dynamic>> history;
 
-  const HistoryPage({super.key, required this.predictionHistory});
-
-  @override
-  State<HistoryPage> createState() => HistoryPageState();
-}
-
-class HistoryPageState extends State<HistoryPage> {
-  final FirebaseFirestore firestore = FirebaseFirestore.instance;
-  List<Prediksi> _prediksiList = [];
-
-  @override
-  void initState() {
-    super.initState();
-    _loadPrediksi();
-  }
-
-  Future<void> _loadPrediksi() async {
-    final QuerySnapshot querySnapshot = await firestore
-        .collection('prediksi')
-        .orderBy('timestamp', descending: true)
-        .get();
-    
-    setState(() {
-      _prediksiList = querySnapshot.docs
-          .map((doc) => Prediksi.fromFirestore(doc))
-          .toList();
-    });
-  }
+  const HistoryPage({super.key, required this.history});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Riwayat Prediksi'),
+        title: const Text('History'),
+        backgroundColor: Colors.blue,
       ),
-      body: _prediksiList.isEmpty
+      body: history.isEmpty
           ? const Center(
-              child: Text('Tidak ada riwayat prediksi'),
+              child: Text(
+                'No history available',
+                style: TextStyle(fontSize: 18, color: Color.fromARGB(255, 0, 255, 234)),
+              ),
             )
           : ListView.builder(
-              itemCount: _prediksiList.length,
+              itemCount: history.length,
               itemBuilder: (context, index) {
-                return ListTile(
-                  title: Text(_prediksiList[index].prediksi),
-                  subtitle: Text(_prediksiList[index].tanggal),
+                final item = history[index];
+                return Card(
+                  margin: const EdgeInsets.all(10),
+                  child: Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text('N: ${item['N']}'),
+                        Text('P: ${item['P']}'),
+                        Text('K: ${item['K']}'),
+                        Text('Temperature: ${item['Temperature']} °C'),
+                        Text('Humidity: ${item['Humidity']} %'),
+                        Text('pH: ${item['pH']}'),
+                        Text('Rainfall: ${item['Rainfall']} mm'),
+                        const SizedBox(height: 10),
+                        Text('Prediction: ${item['Prediction']}', 
+                            style: const TextStyle(fontWeight: FontWeight.bold)),
+                      ],
+                    ),
+                  ),
                 );
               },
             ),
-    );
-  }
-}
-
-class Prediksi {
-  String prediksi;
-  String tanggal;
-
-  Prediksi({required this.prediksi, required this.tanggal});
-
-  factory Prediksi.fromFirestore(DocumentSnapshot doc) {
-    Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
-    return Prediksi(
-      prediksi: data['prediksi'] ?? '',
-      tanggal: data['timestamp'] != null 
-          ? (data['timestamp'] as Timestamp).toDate().toString()
-          : '',
     );
   }
 }

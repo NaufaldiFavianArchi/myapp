@@ -1,199 +1,122 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'weather_dashboard.dart';
-import 'predict_api.dart';
+import 'package:http/http.dart' as http;
+import 'package:logger/logger.dart';
+
+final logger = Logger();
+
+void main() {
+  runApp(const MyApp());
+}
+
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'Harga Komoditas',
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
+      ),
+      home: const KomoditasPage(),
+    );
+  }
+}
 
 class KomoditasPage extends StatefulWidget {
   const KomoditasPage({super.key});
 
   @override
-    State<KomoditasPage> createState() => _KomoditasPageState();
+  State<KomoditasPage> createState() => _KomoditasPageState();
 }
 
 class _KomoditasPageState extends State<KomoditasPage> {
-  final List<Map<String, dynamic>> hargaKomoditas = [
-    {"tanggal": "24/09/2024", "Aceh": "15350", "Jawa Barat": "15500", "Jawa Timur": "15200"},
-    {"tanggal": "25/09/2024", "Aceh": "15300", "Jawa Barat": "15600", "Jawa Timur": "15150"},
-    {"tanggal": "26/09/2024", "Aceh": "15400", "Jawa Barat": "15550", "Jawa Timur": "15300"},
-  ];
+  List<Map<String, dynamic>> hargaKomoditas = [];
+  List<dynamic> commodities = [];
+  List<dynamic> provinces = [];
 
-  String selectedKomoditas = 'Beras Kualitas Bawah I';
+  String selectedKomoditas = 'Beras';
   String selectedProvinsi1 = 'Aceh';
-  String selectedProvinsi2 = 'Jawa Barat';
-
-  final List<String> listKomoditas = ['Beras Kualitas Bawah I', 'Daging Ayam', 'Kentang', 'Cabai', 'Jagung', 'Kedelai', 'Kopi', 'Tebu', 'Bawang Merah', 'Karet'];
-  final List<String> listProvinsi = ['Aceh', 'Jawa Barat', 'Jawa Timur', 'Lampung', 'Bali', 'Sumatera Utara', 'Kalimantan Barat', 'Sulawesi Selatan', 'Papua', 'NTB'];
 
   @override
-  Widget build(BuildContext context) {
-    // var screenWidth = MediaQuery.of(context).size.width;
-    return Scaffold(
-      appBar: AppBar(
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black),
-          onPressed: () => Navigator.pop(context),
-        ),
-        title: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text(
-              "Perbandingan Harga",
-              style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Colors.blueAccent),
-            ),
-            Text("Antar Provinsi", style: TextStyle(fontSize: 14, color: Colors.grey[600])),
-          ],
-        ),
-        backgroundColor: Colors.white,
-        elevation: 0,
-      ),
-      body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 10.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const SizedBox(height: 10),
-            // Filter Komoditas
-            _buildDropdownFilter(
-              label: 'Pilih Komoditas',
-              value: selectedKomoditas,
-              items: listKomoditas,
-              onChanged: (newValue) {
-                setState(() {
-                  selectedKomoditas = newValue!;
-                });
-              },
-            ),
-            const SizedBox(height: 10),
-            // Filter Provinsi/Kota 1
-            _buildDropdownFilter(
-              label: 'Pilih Provinsi/Kota 1',
-              value: selectedProvinsi1,
-              items: listProvinsi,
-              onChanged: (newValue) {
-                setState(() {
-                  selectedProvinsi1 = newValue!;
-                });
-              },
-            ),
-            const SizedBox(height: 10),
-            // Filter Provinsi/Kota 2
-            _buildDropdownFilter(
-              label: 'Pilih Provinsi/Kota 2',
-              value: selectedProvinsi2,
-              items: listProvinsi,
-              onChanged: (newValue) {
-                setState(() {
-                  selectedProvinsi2 = newValue!;
-                });
-              },
-            ),
-            const SizedBox(height: 20),
-            // Tabel Perbandingan Harga Komoditas
-            Expanded(
-              child: Container(
-                decoration: BoxDecoration(
-                  color: Colors.blue[50],
-                  borderRadius: BorderRadius.circular(15),
-                ),
-                padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 15),
-                child: ListView(
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        const Text(
-                          "Tanggal",
-                          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
-                        ),
-                        Text(
-                          selectedProvinsi1,
-                          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.blueAccent),
-                        ),
-                        Text(
-                          selectedProvinsi2,
-                          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.blueAccent),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 10),
-                    ...hargaKomoditas.map((data) {
-                      return Card(
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(15.0),
-                        ),
-                        margin: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 5.0),
-                        elevation: 3,
-                        child: Padding(
-                          padding: const EdgeInsets.all(16.0),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text(
-                                data['tanggal']!,
-                                style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
-                              ),
-                              Text(
-                                'Rp. ${data[selectedProvinsi1]}',
-                                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.green[600]),
-                              ),
-                              Text(
-                                'Rp. ${data[selectedProvinsi2]}',
-                                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.green[600]),
-                              ),
-                            ],
-                          ),
-                        ),
-                      );
-                    }),
-                  ],
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-      bottomNavigationBar: BottomNavigationBar(
-        type: BottomNavigationBarType.fixed,
-        backgroundColor: Colors.white,
-        selectedItemColor: Colors.blueAccent,
-        unselectedItemColor: Colors.grey,
-        showUnselectedLabels: true,
-        selectedFontSize: 14,
-        unselectedFontSize: 12,
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.cloud, size: 30),
-            label: 'Cuaca',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.trending_up, size: 30),
-            label: 'Prediksi',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.grass, size: 30),
-            label: 'Komoditas',
-          ),
-        ],
-        currentIndex: 2,
-        onTap: (index) {
-          switch (index) {
-            case 0:
-              Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(builder: (context) => const WeatherDashboard()),
-              );
-              break;
-            case 1:
-              Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(builder: (context) => const CropPredictionPage()),
-              );
-              break;
-            case 2:
-              break;
-          }
-        },
-      ),
-    );
+  void initState() {
+    super.initState();
+    _fetchInitialData();
+  }
+
+  Future<void> _fetchInitialData() async {
+    try {
+      commodities = await _fetchCommodities();
+      provinces = await _fetchProvinces();
+      _fetchKomoditasData();
+    } catch (e) {
+      logger.e('Error fetching initial data: $e');
+    }
+  }
+
+  Future<List<dynamic>> _fetchCommodities() async {
+    final response = await http.get(Uri.parse('https://www.bi.go.id/hargapangan/WebSite/TabelHarga/GetRefCommodityAndCategory?_=1728194958124'));
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+      return data['data'];
+    } else {
+      throw Exception('Failed to load commodities');
+    }
+  }
+
+  Future<List<dynamic>> _fetchProvinces() async {
+    final response = await http.get(Uri.parse('https://www.bi.go.id/hargapangan/WebSite/TabelHarga/GetRefProvince?_=1728194958125'));
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+      return data['data'];
+    } else {
+      throw Exception('Failed to load provinces');
+    }
+  }
+
+  Future<void> _fetchKomoditasData() async {
+    const String startDate = '2024-09-28';
+    const String endDate = '2024-10-06';
+
+    final selectedCommodity = commodities.firstWhere((element) => element['name'] == selectedKomoditas);
+    final selectedCommodityId = selectedCommodity['id'];
+
+    final selectedProvince1 = provinces.firstWhere((element) => element['name'] == selectedProvinsi1);
+    final selectedProvinceId1 = selectedProvince1['id'];
+
+    final url =
+        'https://www.bi.go.id/hargapangan/WebSite/TabelHarga/GetGridDataDaerah?price_type_id=1&comcat_id=$selectedCommodityId&province_id=$selectedProvinceId1&regency_id=&market_id=&tipe_laporan=1&start_date=$startDate&end_date=$endDate';
+
+    try {
+      final response = await http.get(Uri.parse(url));
+
+      if (response.statusCode == 200) {
+        final jsonResponse = jsonDecode(response.body);
+
+        final List<Map<String, dynamic>> hargaKomoditasTemp = [];
+        for (var item in jsonResponse['data']) {
+          final komoditas = item['name'];
+          const tanggal = '04/10/2024'; // Ini contoh, sebaiknya dinamis berdasarkan tanggal dalam respons
+          final harga = item[tanggal];
+
+          hargaKomoditasTemp.add({
+            'komoditas': komoditas,
+            'provinsi': selectedProvinsi1,
+            'harga': harga,
+            'tanggal': tanggal,
+          });
+        }
+
+        setState(() {
+          hargaKomoditas = hargaKomoditasTemp;
+        });
+      } else {
+        logger.e('Gagal mengambil data, status code: ${response .statusCode}');
+      }
+    } catch (e) {
+      logger.e('Error fetching data: $e');
+    }
   }
 
   Widget _buildDropdownFilter({
@@ -203,11 +126,12 @@ class _KomoditasPageState extends State<KomoditasPage> {
     required Function(String?) onChanged,
   }) {
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.start ,
       children: [
         Text(
           label,
-          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500, color: Colors.grey[700]),
+          style: TextStyle(
+              fontSize: 16, fontWeight: FontWeight.w500, color: Colors.grey[700]),
         ),
         const SizedBox(height: 5),
         Container(
@@ -215,7 +139,7 @@ class _KomoditasPageState extends State<KomoditasPage> {
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.circular(20),
-            boxShadow: const[
+            boxShadow: const [
               BoxShadow(
                 color: Colors.black12,
                 blurRadius: 8,
@@ -238,6 +162,60 @@ class _KomoditasPageState extends State<KomoditasPage> {
           ),
         ),
       ],
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Harga Komoditas'),
+        backgroundColor: Colors.blue,
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _buildDropdownFilter(
+              label: 'Pilih Komoditas',
+              value: selectedKomoditas,
+              items: commodities.map((e) => e['name'].toString()).toList(),
+              onChanged: (newValue) {
+                setState(() {
+                  selectedKomoditas = newValue!;
+                  _fetchKomoditasData();
+                });
+              },
+            ),
+            const SizedBox(height: 10),
+            _buildDropdownFilter(
+              label: 'Pilih Provinsi/Kota',
+              value: selectedProvinsi1,
+              items: provinces.map((e) => e['name'].toString()).toList(),
+              onChanged: (newValue) {
+                setState(() {
+                  selectedProvinsi1 = newValue!;
+                  _fetchKomoditasData();
+                });
+              },
+            ),
+            const SizedBox(height: 20),
+            Expanded(
+              child: ListView(
+                children: hargaKomoditas.map((data) {
+                  return Card(
+                    child: ListTile(
+                      title: Text('${data['komoditas']} - ${data['provinsi']}'),
+                      subtitle: Text('Harga: Rp. ${data['harga']} - Tanggal: ${data['tanggal']}'),
+                    ),
+                  );
+                }).toList(),
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

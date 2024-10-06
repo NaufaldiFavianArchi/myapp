@@ -89,9 +89,9 @@ class _CropPredictionPageState extends State<CropPredictionPage> {
   Future<void> _predictCrop() async {
     String url;
     if (kIsWeb) {
-      url = 'https://df14-103-73-77-2.ngrok-free.app/predict';
+      url = 'https://8b82-103-73-77-2.ngrok-free.app/predict';
     } else if (Platform.isAndroid) {
-      url = 'https://df14-103-73-77-2.ngrok-free.app/predict';
+      url = 'https://8b82-103-73-77-2.ngrok-free.app/predict';
     } else {
       url = 'http://127.0.0.1:5000/predict';
     }

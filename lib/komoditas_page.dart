@@ -2,6 +2,8 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:logger/logger.dart';
+import 'predict_api.dart'; 
+import 'weather_dashboard.dart';
 
 final logger = Logger();
 
@@ -215,6 +217,44 @@ class _KomoditasPageState extends State<KomoditasPage> {
             ),
           ],
         ),
+      ),
+      bottomNavigationBar: BottomNavigationBar(
+        items: const [
+          BottomNavigationBarItem(
+            icon: Icon(Icons.cloud, size: 30),
+            label: 'Cuaca',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.trending_up, size: 30),
+            label: 'Prediksi',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.grass, size: 30),
+            label: 'Komoditas',
+          ),
+        ],
+        currentIndex: 2, // Pilih indeks yang sesuai dengan halaman Anda
+        selectedItemColor: Colors.blueAccent,
+        unselectedItemColor: Colors.grey,
+        onTap: (index) {
+          switch (index) {
+            case 0:
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(builder: (context) => const WeatherDashboard()),
+              );
+              break;
+            case 1:
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(builder: (context) => const CropPredictionPage()),
+              );
+              break;
+            case 2:
+              // Jangan lakukan apa-apa karena sudah berada di halaman ini
+              break;
+          }
+        },
       ),
     );
   }

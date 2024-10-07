@@ -95,10 +95,9 @@ class _WeatherDashboardState extends State<WeatherDashboard> {
               children: [
                 const SizedBox(height: 100),
                 _buildCurrentWeatherSection(),
-                const SizedBox(height: 20),
+                const SizedBox(height: 50),
                 _buildHourlyUpdateSection(),
-                const SizedBox(height: 20),
-                _buildDroughtStatusSection(),
+                const SizedBox(height: 70),
               ],
             ),
           ),
@@ -207,35 +206,6 @@ class _WeatherDashboardState extends State<WeatherDashboard> {
     );
   }
 
-  Widget _buildDroughtStatusSection() {
-    String droughtStatus = getDroughtStatus(humidity, temperature);
-
-    return Container(
-      padding: const EdgeInsets.all(16.0),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(20),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Text(
-            "Drought Status",
-            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-          ),
-          const SizedBox(height: 10),
-          Text(
-            droughtStatus,
-            style: TextStyle(
-              fontSize: 18,
-              color: droughtStatus == "Drought Risk" ? Colors.red : Colors.green,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
 
   Widget _buildWeatherDetailItem(String title, String value) {
     return Column(

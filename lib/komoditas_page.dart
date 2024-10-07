@@ -39,7 +39,7 @@ class _KomoditasPageState extends State<KomoditasPage> {
   List<dynamic> provinces = [];
 
   String selectedKomoditas = 'Beras';
-  String selectedProvinsi1 = 'Aceh';
+  String selectedProvinsi1 = 'Lampung';
 
   @override
   void initState() {
@@ -58,7 +58,7 @@ class _KomoditasPageState extends State<KomoditasPage> {
   }
 
   Future<List<dynamic>> _fetchCommodities() async {
-    final response = await http.get(Uri.parse('https://www.bi.go.id/hargapangan/WebSite/TabelHarga/GetRefCommodityAndCategory?_=1728194958124'));
+    final response = await http.get(Uri.parse('https://www.bi.go.id/hargapangan/WebSite/TabelHarga/GetRefCommodityAndCategory?_=1728298785345'));
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
       return data['data'];
@@ -68,7 +68,7 @@ class _KomoditasPageState extends State<KomoditasPage> {
   }
 
   Future<List<dynamic>> _fetchProvinces() async {
-    final response = await http.get(Uri.parse('https://www.bi.go.id/hargapangan/WebSite/TabelHarga/GetRefProvince?_=1728194958125'));
+    final response = await http.get(Uri.parse('https://www.bi.go.id/hargapangan/WebSite/TabelHarga/GetRefProvince?_=1728298785346'));
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
       return data['data'];

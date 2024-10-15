@@ -55,8 +55,7 @@ class _CropPredictionPageState extends State<CropPredictionPage> {
   final FocusNode _rainfallFocus = FocusNode();
 
   String _predictionResult = '';
-  List<Map<String, dynamic>> _history =
-      []; // List untuk menyimpan riwayat dengan input
+  List<Map<String, dynamic>> _history = []; // List untuk menyimpan riwayat dengan input
 
   final logger = Logger('CropPredictionPage');
 
@@ -89,9 +88,9 @@ class _CropPredictionPageState extends State<CropPredictionPage> {
   Future<void> _predictCrop() async {
     String url;
     if (kIsWeb) {
-      url = 'https://3fdf-103-73-77-2.ngrok-free.app/predict';
+      url = 'https://df46-103-73-77-2.ngrok-free.app/predict';
     } else if (Platform.isAndroid) {
-      url = 'https://3fdf-103-73-77-2.ngrok-free.app/predict';
+      url = 'https://df46-103-73-77-2.ngrok-free.app/predict';
     } else {
       url = 'http://127.0.0.1:5000/predict';
     }
@@ -134,7 +133,7 @@ class _CropPredictionPageState extends State<CropPredictionPage> {
     }
   }
 
- Future<void> _saveDataToFirebase() async {
+  Future<void> _saveDataToFirebase() async {
     try {
       logger.info('Starting to save data to Firestore');
       final FirebaseFirestore firestore = FirebaseFirestore.instance;
@@ -165,6 +164,36 @@ class _CropPredictionPageState extends State<CropPredictionPage> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Gagal menyimpan data: $e')),
+        );
+      }
+    }
+  }
+
+  Future<void> _fillDataFromApi() async {
+    const temperatureUrl = 'https://sgp1.blynk.cloud/external/api/get?token=CgywuNxqeZLP9z_OTK2ccUsZudFf5zAc&v2';
+    const humidityUrl = 'https://sgp1.blynk.cloud/external/api/get?token=CgywuNxqeZLP9z_OTK2ccUsZudFf5zAc&v3';
+
+    try {
+      final temperatureResponse = await http.get(Uri.parse(temperatureUrl));
+      final humidityResponse = await http.get(Uri.parse(humidityUrl));
+
+      if (temperatureResponse.statusCode == 200 && humidityResponse.statusCode == 200) {
+        setState(() {
+          _temperatureController.text = temperatureResponse.body;
+          _humidityController.text = humidityResponse.body;
+        });
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Data berhasil diambil dari API')),
+          );
+        }
+      } else {
+        throw Exception('Gagal mengambil data dari API');
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error: $e')),
         );
       }
     }
@@ -211,9 +240,7 @@ class _CropPredictionPageState extends State<CropPredictionPage> {
             const Text(
               'Enter Crop Details',
               style: TextStyle(
-                  fontSize: 22,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.blue),
+                  fontSize: 22, fontWeight: FontWeight.bold, color: Colors.blue),
             ),
             const SizedBox(height: 20),
             _buildTextField(_nController, 'N (Nitrogen)', Icons.grass,
@@ -225,16 +252,11 @@ class _CropPredictionPageState extends State<CropPredictionPage> {
             _buildTextField(_kController, 'K (Potassium)', Icons.grass,
                 'Enter K value', _kFocus, _temperatureFocus),
             const SizedBox(height: 10),
-            _buildTextField(
-                _temperatureController,
-                'Temperature (°C)',
-                Icons.thermostat_outlined,
-                'Enter temperature',
-                _temperatureFocus,
-                _humidityFocus),
+            _buildTextField(_temperatureController, 'Temperature (°C)',
+                Icons.thermostat_outlined, 'Enter temperature', _temperatureFocus, _humidityFocus),
             const SizedBox(height: 10),
-            _buildTextField(_humidityController, 'Humidity (%)',
-                Icons.water_drop, 'Enter humidity', _humidityFocus, _phFocus),
+            _buildTextField(_humidityController, 'Humidity (%)', Icons.water_drop,
+                'Enter humidity', _humidityFocus, _phFocus),
             const SizedBox(height: 10),
             _buildTextField(_phController, 'pH', Icons.science_outlined,
                 'Enter pH value', _phFocus, _rainfallFocus),
@@ -246,13 +268,26 @@ class _CropPredictionPageState extends State<CropPredictionPage> {
               onPressed: _predictCrop,
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.blue,
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 50, vertical: 15),
+                padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 15),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(30),
                 ),
               ),
               child: const Text('Predict Crop', style: TextStyle(fontSize: 18)),
+            ),
+            const SizedBox(height: 20),
+            // Tambahkan tombol baru untuk mengisi data dari API Blynk
+            ElevatedButton(
+              onPressed: _fillDataFromApi,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.green,
+                padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 15),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(30),
+                ),
+              ),
+              child: const Text('Fill Data from API Blynk',
+                  style: TextStyle(fontSize: 18)),
             ),
             const SizedBox(height: 20),
             _predictionResult.isNotEmpty
@@ -292,9 +327,9 @@ class _CropPredictionPageState extends State<CropPredictionPage> {
         ),
       ),
       bottomNavigationBar: BottomNavigationBar(
-        backgroundColor: Colors.white, // Latar belakang putih
-        selectedItemColor: Colors.blueAccent, // Warna untuk item yang dipilih
-        unselectedItemColor: Colors.grey, // Warna untuk item yang tidak dipilih
+        backgroundColor: Colors.white,
+        selectedItemColor: Colors.blueAccent,
+        unselectedItemColor: Colors.grey,
         items: const [
           BottomNavigationBarItem(
             icon: Icon(Icons.cloud),
@@ -309,21 +344,18 @@ class _CropPredictionPageState extends State<CropPredictionPage> {
             label: 'Komoditas',
           ),
         ],
-        currentIndex: 1, // Index untuk menandakan halaman aktif
+        currentIndex: 1,
         onTap: (index) {
           switch (index) {
             case 0:
-              // Navigasi ke halaman Cuaca
               Navigator.pushReplacement(
                 context,
                 MaterialPageRoute(builder: (context) => const WeatherDashboard()),
               );
               break;
             case 1:
-              // Sudah di halaman Prediksi
               break;
             case 2:
-              // Navigasi ke halaman Komoditas
               Navigator.pushReplacement(
                 context,
                 MaterialPageRoute(builder: (context) => const KomoditasPage()),
@@ -335,25 +367,29 @@ class _CropPredictionPageState extends State<CropPredictionPage> {
     );
   }
 
+
   Widget _buildTextField(
-      TextEditingController controller,
-      String label,
-      IconData icon,
-      String hint,
-      FocusNode currentFocus,
-      FocusNode? nextFocus) {
+    TextEditingController controller,
+    String label,
+    IconData icon,
+    String hint,
+    FocusNode currentFocus,
+    FocusNode? nextFocus,
+  ) {
     return TextField(
       controller: controller,
       focusNode: currentFocus,
-      keyboardType: TextInputType.number,
       decoration: InputDecoration(
         labelText: label,
         hintText: hint,
         prefixIcon: Icon(icon),
         border: const OutlineInputBorder(),
       ),
-      onSubmitted: (value) {
-        _nextFocus(currentFocus, nextFocus!, controller);
+      keyboardType: TextInputType.number,
+      textInputAction:
+          nextFocus != null ? TextInputAction.next : TextInputAction.done,
+      onEditingComplete: () {
+        _nextFocus(currentFocus, nextFocus ?? currentFocus, controller);
       },
     );
   }
